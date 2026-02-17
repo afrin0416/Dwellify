@@ -1,0 +1,16 @@
+asgiref==3.11.1
+Django==6.0.2
+django-filter==25.2
+djangorestframework==3.16.1
+djangorestframework_simplejwt==5.5.1
+pillow==12.1.1
+psycopg2-binary==2.9.11
+PyJWT==2.11.0
+python-decouple==3.8
+python-dotenv==1.2.1
+setuptools==80.10.2
+six==1.17.0
+sqlparse==0.5.5
+uv==0.10.3
+wheel==0.46.3
+whitenoise==6.11.0
