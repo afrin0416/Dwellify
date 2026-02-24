@@ -1,3 +1,4 @@
+import dj_database_url
 import os
 from pathlib import Path
 from datetime import timedelta
@@ -17,24 +18,26 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = ['.vercel.app',  '127.0.0.1']
 
+
 INSTALLED_APPS = [
     "whitenoise.runserver_nostatic",
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-      'drf_yasg',
+    'cloudinary_storage',
+    'cloudinary',
+    'drf_yasg',
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'django_filters',
-
+    'corsheaders',
     'accounts',
     'advertisements',
-
+    'payments',
 ]
 
 MIDDLEWARE = [
@@ -69,15 +72,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'house_rent.wsgi.app'
 
+
 DATABASES = {
-    'default': {
-        'ENGINE': os.environ.get('DB_ENGINE'),
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': os.environ.get('DB_PORT'),
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get(
+            'DATABASE_URL',
+            f'sqlite:///{BASE_DIR / "db.sqlite3"}'
+        ),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -94,7 +98,14 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -151,3 +162,6 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = config('EMAIL_HOST_USER', default='noreply@houserent.com')
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://127.0.0.1:8000')
+BACKEND_URL = config('BACKEND_URL', default='http://127.0.0.1:8000')
+
+CORS_ALLOW_ALL_ORIGINS = DEBUG

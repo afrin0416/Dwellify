@@ -23,24 +23,22 @@ from .tokens import email_verification_token
 from .permissions import IsAdmin
 
 
-# REGISTRATION 
+# REGISTRATION
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register(request):
-    
+
     serializer = UserRegistrationSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
 
-        
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = email_verification_token.make_token(user)
         verification_url = (
-            f"{settings.FRONTEND_URL}/api/accounts/verify-email/{uid}/{token}/"
+            f"{settings.BACKEND_URL}/api/accounts/verify-email/{uid}/{token}/"
         )
 
-        
         subject = 'Verify Your Email - House Rent Site'
         message = (
             f"Hi {user.username},\n\n"
@@ -78,19 +76,19 @@ def register(request):
 
         if not email_sent:
             response_data['email_error'] = email_error
-            response_data['verification_url'] = verification_url  
+            response_data['verification_url'] = verification_url
 
         return Response(response_data, status=status.HTTP_201_CREATED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# EMAIL VERIFICATION 
+# EMAIL VERIFICATION
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def verify_email(request, uidb64, token):
-    
+
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
@@ -115,12 +113,12 @@ def verify_email(request, uidb64, token):
         )
 
 
-#  RESEND VERIFICATION EMAIL 
+#  RESEND VERIFICATION EMAIL
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def resend_verification_email(request):
-    
+
     email = request.data.get('email')
     if not email:
         return Response(
@@ -142,11 +140,11 @@ def resend_verification_email(request):
             status=status.HTTP_200_OK
         )
 
-    
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = email_verification_token.make_token(user)
+
     verification_url = (
-        f"{settings.FRONTEND_URL}/api/accounts/verify-email/{uid}/{token}/"
+        f"{settings.BACKEND_URL}/api/accounts/verify-email/{uid}/{token}/"
     )
 
     subject = 'Verify Your Email - House Rent Site (Resent)'
@@ -177,24 +175,24 @@ def resend_verification_email(request):
         )
 
 
-#  JWT LOGIN 
+#  JWT LOGIN
 
 class CustomTokenObtainPairView(TokenObtainPairView):
-    
+
     serializer_class = CustomTokenObtainPairSerializer
 
 
-#  JWT TOKEN REFRESH 
+#  JWT TOKEN REFRESH
 
 class CustomTokenRefreshView(TokenRefreshView):
     pass
 
 
-#  JWT LOGOUT 
+#  JWT LOGOUT
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def logout_view(request):
-    
+
     try:
         refresh_token = request.data.get('refresh')
         if not refresh_token:
@@ -217,12 +215,12 @@ def logout_view(request):
         )
 
 
-#  LOGOUT ALL DEVICES 
+#  LOGOUT ALL DEVICES
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def logout_all(request):
-    
+
     try:
         tokens = OutstandingToken.objects.filter(user=request.user)
         for token in tokens:
@@ -242,10 +240,10 @@ def logout_all(request):
         )
 
 
-#  USER PROFILE 
+#  USER PROFILE
 
 class UserProfileView(generics.RetrieveUpdateAPIView):
-    
+
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
 
@@ -253,12 +251,12 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 
-#  CHANGE PASSWORD 
+#  CHANGE PASSWORD
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def change_password(request):
-    
+
     serializer = ChangePasswordSerializer(data=request.data)
     if serializer.is_valid():
         user = request.user
@@ -271,7 +269,6 @@ def change_password(request):
         user.set_password(serializer.validated_data['new_password'])
         user.save()
 
-        
         refresh = RefreshToken.for_user(user)
 
         return Response(
@@ -285,14 +282,11 @@ def change_password(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-#  ADMIN - LIST USERS 
+#  ADMIN - LIST USERS
 
 class UserListView(generics.ListAPIView):
-    
     serializer_class = UserListSerializer
     permission_classes = [IsAuthenticated, IsAdmin]
 
     def get_queryset(self):
         return User.objects.all().order_by('-created_at')
-    serializer_class = UserListSerializer
-    permission_classes = [IsAuthenticated, IsAdmin]
