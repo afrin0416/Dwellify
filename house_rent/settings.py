@@ -16,7 +16,7 @@ SECRET_KEY = config(
 
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['.vercel.app',  '127.0.0.1']
+ALLOWED_HOSTS = ['.vercel.app',  '127.0.0.1', 'localhost:5173']
 
 
 INSTALLED_APPS = [
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
 
@@ -164,4 +165,8 @@ DEFAULT_FROM_EMAIL = config('EMAIL_HOST_USER', default='noreply@houserent.com')
 FRONTEND_URL = config('FRONTEND_URL', default='http://127.0.0.1:8000')
 BACKEND_URL = config('BACKEND_URL', default='http://127.0.0.1:8000')
 
-CORS_ALLOW_ALL_ORIGINS = DEBUG
+# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
+CORS_ALLOW_CREDENTIALS = True
