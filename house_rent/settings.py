@@ -16,7 +16,8 @@ SECRET_KEY = config(
 
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['.vercel.app',  '127.0.0.1', 'localhost:5173']
+ALLOWED_HOSTS = ['.vercel.app',
+                 'https://dwellify-frontend.vercel.app']
 
 
 INSTALLED_APPS = [
@@ -74,15 +75,25 @@ TEMPLATES = [
 WSGI_APPLICATION = 'house_rent.wsgi.app'
 
 
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default=os.environ.get(
+#             'DATABASE_URL',
+#             f'sqlite:///{BASE_DIR / "db.sqlite3"}'
+#         ),
+#         conn_max_age=600,
+#         conn_health_checks=True,
+#     )
+# }
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get(
-            'DATABASE_URL',
-            f'sqlite:///{BASE_DIR / "db.sqlite3"}'
-        ),
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
+    'default': {
+        'ENGINE': os.environ.get('DB_ENGINE'),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT'),
+    }
 }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -162,11 +173,12 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = config('EMAIL_HOST_USER', default='noreply@houserent.com')
 
-FRONTEND_URL = config('FRONTEND_URL', default='http://127.0.0.1:8000')
-BACKEND_URL = config('BACKEND_URL', default='http://127.0.0.1:8000')
+FRONTEND_URL = config(
+    'FRONTEND_URL', default='https://dwellify-frontend.vercel.app')
+BACKEND_URL = config('BACKEND_URL', default='https://dwellify-bice.vercel.app')
 
 # CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
+    "https://dwellify-frontend.vercel.app",
 ]
 CORS_ALLOW_CREDENTIALS = True
