@@ -173,6 +173,11 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = config('EMAIL_HOST_USER', default='noreply@houserent.com')
 
+SSLCOMMERZ_STORE_ID = config("SSLCOMMERZ_STORE_ID", default="")
+SSLCOMMERZ_STORE_PASSWORD = config("SSLCOMMERZ_STORE_PASSWORD", default="")
+SSLCOMMERZ_IS_SANDBOX = config("SSLCOMMERZ_IS_SANDBOX", default=True, cast=bool)
+
+
 FRONTEND_URL = config(
     'FRONTEND_URL', default='https://dwellify-frontend.vercel.app')
 BACKEND_URL = config('BACKEND_URL', default='https://dwellify-bice.vercel.app')
